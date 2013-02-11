@@ -200,10 +200,10 @@ if __name__ == '__main__':
 
     usage = """%prog [options] "<command(s)>"
 
-RunJOP (Run Just Once Please)
+RunJOP (Run Just Once Please) is a distributed execution framework
+to run a command (i.e. a job) only once in a group of servers
+and can be used together with UNIX/Linux cron to put a crontab schedule in High Availability (HA).
 
-A distributed execution framework to run a command (i.e. a job) only once in a group of servers.
-This can be used together with UNIX/Linux cron to put a crontab schedule in High Availability (HA).
 The idea is to use Amazon DynamoDB to make sure only one server "reserves" the right
 to execute the command for a certain range of time.
 Amazon S3 can optionally be used to consolidate the logs of the jobs in a single repository.
