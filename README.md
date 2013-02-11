@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### Run Just Once Please: runjop
 
 RunJOP (Run Just Once Please) is a distributed execution framework to run a command (i.e. a job) only once in a group of servers.
@@ -84,28 +85,34 @@ E.g. to	execute	the job to be run every two hours, namely at midnight, 2am, 4am,
 
 ### Full Usage
 
-Usage: runjop.py [options] "<command(s)>"
+    Usage: runjop.py [options] "<command(s)>"
 
-RunJOP (Run Just Once Please)
+    RunJOP (Run Just Once Please)
 
-A distributed execution framework to run a command (i.e. a job) only once in a group of servers.
-This can be used together with UNIX/Linux cron to put a crontab schedule in High Availability (HA).
-The idea is to use Amazon DynamoDB to make sure only one server "reserves" the right
-to execute the command for a certain range of time.
-Amazon S3 can optionally be used to consolidate the logs of the jobs in a single repository.
+    A distributed execution framework to run a command (i.e. a job) only once in a group of servers.
+    This can be used together with UNIX/Linux cron to put a crontab schedule in High Availability (HA).
+    The idea is to use Amazon DynamoDB to make sure only one server "reserves" the right
+    to execute the command for a certain range of time.
+    Amazon S3 can optionally be used to consolidate the logs of the jobs in a single repository.
 
-Options:
-  -h, --help       show this help message and exit
-  --region=REGION  AWS region to use for DynamoDB (default is us-east-1)
-  --table=TABLE    the DynamoDB table use to check concurrency and log job
-                   executions (a new table is created if not found)
-  --id=ID          the unique ID identifying this job across multiple servers
-  --node=NODE      an identifier for the node (default on this node is
-                   current 'hostname')
-  --range=S        the range of time (in seconds) in which the execution of
-                   the job must be unique (default is 300 seconds)
-  --s3=URL         the optional S3 path to put the output of the job in
-                   s3://BUCKET[/PATH] format
-  --log=FILE       the local filename to use for logs
-  -d, --debug      print debug information
+    Options:
+      -h, --help       show this help message and exit
+      --region=REGION  AWS region to use for DynamoDB (default is us-east-1)
+      --table=TABLE    the DynamoDB table use to check concurrency and log job
+		       executions (a new table is created if not found)
+      --id=ID          the unique ID identifying this job across multiple servers
+      --node=NODE      an identifier for the node (default on this node is
+		       current 'hostname')
+      --range=S        the range of time (in seconds) in which the execution of
+		       the job must be unique (default is 300 seconds)
+      --s3=URL         the optional S3 path to put the output of the job in
+		       s3://BUCKET[/PATH] format
+      --log=FILE       the local filename to use for logs
+      -d, --debug      print debug information
 
+=======
+runjop
+======
+
+RunJOP (Run Just Once Please) is a distributed execution framework to run a command (i.e. a job) only once in a group of servers.
+>>>>>>> b135f86829e0ccaf9ec5fb2ccdd3af1ecee02ecb
