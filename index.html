@@ -38,17 +38,16 @@
 <p>Some possible use cases are:</p>
 
 <ul>
-<li>It can be used together with UNIX/Linux <a href="http://en.wikipedia.org/wiki/Cron">cron</a> to put a crontab schedule in High Availability (HA).</li>
-<li>To execute a batch in an <a href="http://aws.amazon.com/autoscaling/">Auto Scaling</a> group by only one of the EC2 instances.</li>
-<li>To execute a command after an SNS notification is received in HA on multiple nodes, using the <code>MessageId</code> as the id of the job to make sure is executed only once.</li>
+<li><p>It can be used together with UNIX/Linux <a href="http://en.wikipedia.org/wiki/Cron">cron</a> to put a crontab schedule in High Availability (HA).</p></li>
+<li><p>To execute a batch in an <a href="http://aws.amazon.com/autoscaling/">Auto Scaling</a> group by only one of the EC2 instances.</p></li>
+<li><p>To execute a command after an SNS notification is received in HA on multiple nodes, using the <code>MessageId</code> as the id of the job to make sure is executed only once.</p></li>
 </ul><p>Some features and internals:</p>
 
 <ul>
-<li>The idea is to use <a href="http://aws.amazon.com/dynamodb/">Amazon DynamoDB</a> to make sure only one server "reserves" the right to execute the command for a certain range of time.</li>
-<li>
-<a href="http://aws.amazon.com/s3/">Amazon S3</a> can optionally be used to consolidate the logs of the jobs in a single repository.</li>
-<li>AWS credentials can be passed using AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environmental variables.</li>
-<li>In an EC2 instance a IAM role can be used to give access to DynamoDB/S3 resources.</li>
+<li><p>The idea is to use <a href="http://aws.amazon.com/dynamodb/">Amazon DynamoDB</a> to make sure only one server "reserves" the right to execute the command for a certain range of time.</p></li>
+<li><p><a href="http://aws.amazon.com/s3/">Amazon S3</a> can optionally be used to consolidate the logs of the jobs in a single repository.</p></li>
+<li><p>AWS credentials can be passed using AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environmental variables.</p></li>
+<li><p>In an EC2 instance a IAM role can be used to give access to DynamoDB/S3 resources.</p></li>
 </ul><p><strong>This is a personal project. No relation whatsoever exists between this project and my employer.</strong></p>
 
 <h3>License</h3>
