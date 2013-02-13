@@ -35,7 +35,12 @@
 
 <p>RunJOP (Run Just Once Please) is a distributed execution framework to run a command (i.e. a job) only once in a group of servers and can be used together with UNIX/Linux <a href="http://en.wikipedia.org/wiki/Cron">cron</a> to put a crontab schedule in High Availability (HA).</p>
 
-<p>Another possible use case is to execute a command after an SNS notification is received in HA on multiple nodes, using the <code>MessageId</code> as the id of the job to make sure is executed only once.</p>
+<p>Other possible use cases are:</p>
+
+<ul>
+<li>to execute a batch in an <a href="http://aws.amazon.com/autoscaling/">Auto Scaling</a> group by only one of the EC2 instances</li>
+<li>to execute a command after an SNS notification is received in HA on multiple nodes, using the <code>MessageId</code> as the id of the job to make sure is executed only once</li>
+</ul><p>Some features and internals:</p>
 
 <ul>
 <li>The idea is to use <a href="http://aws.amazon.com/dynamodb/">Amazon DynamoDB</a> to make sure only one server "reserves" the right to execute the command for a certain range of time.</li>
