@@ -4,7 +4,7 @@ RunJOP (Run Just Once Please) is a distributed execution framework to run a comm
 
 Other possible use cases are:
 * to execute a batch in an [Auto Scaling](http://aws.amazon.com/autoscaling/) group by only one of the EC2 instances
-* to execute a command after an SNS notification is received in HA on multiple nodes, using the `MessageId` as the id of the job to make sure is executed only once.
+* to execute a command after an SNS notification is received in HA on multiple nodes, using the `MessageId` as the id of the job to make sure is executed only once
 
 Some features and internals:
 * The idea is to use [Amazon DynamoDB](http://aws.amazon.com/dynamodb/) to make sure only one server "reserves" the right to execute the command for a certain range of time.
