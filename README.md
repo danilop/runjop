@@ -2,6 +2,9 @@
 
 RunJOP (Run Just Once Please) is a distributed execution framework to run a command (i.e. a job) only once in a group of servers and can be used together with UNIX/Linux [cron](http://en.wikipedia.org/wiki/Cron) to put a crontab schedule in High Availability (HA).
 
+Another possible use case is to execute a command after an SNS notification is received in HA on multiple nodes, using the `MessageId` as the id of the job to make sure is executed only once.
+
+
 * The idea is to use [Amazon DynamoDB](http://aws.amazon.com/dynamodb/) to make sure only one server "reserves" the right to execute the command for a certain range of time.
 * [Amazon S3](http://aws.amazon.com/s3/) can optionally be used to consolidate the logs of the jobs in a single repository.
 * AWS credentials can be passed using AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environmental variables.
@@ -11,15 +14,15 @@ RunJOP (Run Just Once Please) is a distributed execution framework to run a comm
 
 ### License
 
-Copyright (c) 2013 Danilo Poccia, http://blog.danilopoccia.net
+Copyright (c) 2013 Danilo Poccia, `http://blog.danilopoccia.net`
 
 This code is licensed under the The MIT License (MIT). Please see the LICENSE file that accompanies this project for the terms of use.
 
 ### Introduction
 
-Running this two commands concurrently on two host (directly or through cron) one of the node will execute the command, the other will not. In this example the command is executed on the "second" node. Debugging info is added to give more information on the execution.
+Running this two commands concurrently on two hosts one of the node will execute the command, the other will not. In this example the command is executed on the "second" node. Debugging info is added to give more information on the execution.
 
-On the "first" node:
+In this example, on the "first" node the "Hello World" command is not executed:
 
     runjop.py --region=eu-west-1 --table myschedule --id my-job --range=10 --node first --s3=s3://BUCKET/mylogs "echo Hello World" --log /tmp/runjop.log -d
     DEBUG:runjop:__init__ '{'node': 'first', 's3log': 's3://BUCKET/mylogs', 'region': 'eu-west-1', 'range': '10', 'debug': True, 'table': 'runjop', 'logfile': '/tmp/runjop.log', 'id': 'my-job'}'
@@ -38,7 +41,7 @@ On the "first" node:
     INFO:runjop:not outside of range of execution
     INFO:runjop:command not executed
 
-On the "second" node:
+On the "second" node, the "Hello World" command is executed:
 
     runjop.py --region=eu-west-1 --table myschedule --id my-job --range=10 --node second --s3=s3://BUCKET/mylogs "echo Hello World" --log /tmp/runjop.log -d
     DEBUG:runjop:__init__ '{'node': 'second', 's3log': 's3://BUCKET/mylogs', 'region': 'eu-west-1', 'range': '10', 'debug': True, 'table': 'runjop', 'logfile': '/tmp/runjop.log', 'id': 'my-job'}'
@@ -71,7 +74,11 @@ The optional S3 log has the following naming convention:
 
 ### Using with cron
 
-The previous example can be scheduled using [cron](http://en.wikipedia.org/wiki/Cron) on more than one hosts, but only one will actually run it. Without the "--node" option the hostname of each node is used. Without the "--range" option the default 300 seconds (5 minutes) range is used.
+The previous example can be scheduled using [cron](http://en.wikipedia.org/wiki/Cron) on more than one hosts, but only one will actually run it.
+
+In this example two options are removed from the invocation of the tool (compared to the previous one):
+* without the "--node" option the hostname of each node is used
+* without the "--range" option the default 300 seconds (5 minutes) range is used.
 
 E.g. to execute the job one minute past midnight (00:01) of every day of the month, of every day of the week:
 
