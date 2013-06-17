@@ -12,12 +12,12 @@ import boto.dynamodb.layer2
 
 from boto.s3.key import Key
 
-from optparse import OptionParser
+import argparse
 
-logging.basicConfig()
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('runjop')
 
-class RunJOP():
+class RunJOP(object):
 
     def __init__(self, options):
         logger.debug("__init__ '%s'" % options)
@@ -200,67 +200,52 @@ def errorAndExit(error, exitCode=1):
     exit(exitCode)
 
 def main():
-    usage = """%prog [options] "<command(s)>"
-
-RunJOP (Run Just Once Please) is a distributed execution framework
+    description = """RunJOP (Run Just Once Please) is a distributed execution framework
 to run a command (i.e. a job) only once in a group of servers
-and can be used together with UNIX/Linux cron to put a crontab schedule in High Availability (HA).
+and can be used together with UNIX/Linux cron to put a crontab schedule in High Availability (HA)."""
 
-The idea is to use Amazon DynamoDB to make sure only one server "reserves" the right
-to execute the command for a certain range of time.
-Amazon S3 can optionally be used to consolidate the logs of the jobs in a single repository.
-AWS credentials can be passed using AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environmental variables.
-In an EC2 instance a IAM role can be used to give access to DynamoDB/S3 resources."""
+    epilog = """The idea is to use Amazon DynamoDB to make sure only one server "reserves" the
+right to execute the command for a certain range of time.  Amazon S3 can
+optionally be used to consolidate the logs of the jobs in a single repository.
+AWS credentials can be passed using AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+environmental variables.  In an EC2 instance a IAM role can be used to give
+access to DynamoDB/S3 resources."""
 
-    parser = OptionParser(usage=usage)
+    parser = argparse.ArgumentParser(epilog=epilog, description=description)
 
-    parser.add_option("--region", dest="region",
-                      help="AWS region to use for DynamoDB (default is %default)",
-                      metavar="REGION", default="us-east-1")
+    required_group = parser.add_argument_group("required arguments")
+    required_group.add_argument("--table", action="store", required=True,
+            help="DynamoDB table to use for concurrency checks and log job execution.")
+    required_group.add_argument("--id", action="store",
+            help="The Unique ID for identifying this job across multiple servers.")
+    required_group.add_argument("--node", action="store", default=socket.gethostbyaddr(socket.gethostname())[0],
+            help="Identifies the particular node; defaults to the hostname.")
+    required_group.add_argument("--command", metavar="COMMAND", required=True,
+            help="The specified command will be run on only once.")
 
-    parser.add_option("--table", dest="table",
-                      help="the DynamoDB table use to check concurrency and log job executions (a new table is created if not found)",
-                      metavar="TABLE")
+    parser.add_argument("--region", action="store", default="us-east-1",
+            help="AWS region to use for DynamoDB")
+    parser.add_argument("--force-create", action="store_true", dest="force_create", default=False,
+            help="Forces a new table to be created if the specified table does not already exist.")
+    parser.add_argument("--range", metavar="S", type=int, default=300,
+            help="the range of time (in seconds) in which the execution of the job must be unique")
+    parser.add_argument("--s3log", metavar="s3://BUCKET[/PATH]",
+            help="S3 path to put the output of the job.")
+    parser.add_argument("--log", metavar="FILE", dest="logfile",
+            help="Local filename to use for the log.")
+    parser.add_argument("--debug", action="store_true", default=False,
+            help="print debug information")
 
-    parser.add_option("--id", dest="id",
-                      help="the unique ID identifying this job across multiple servers",
-                      metavar="ID")
+    args = parser.parse_args()
 
-    parser.add_option("--node", dest="node",
-                      help="an identifier for the node (default on this node is '%default')",
-                      metavar="NODE", default=socket.gethostbyaddr(socket.gethostname())[0])
-
-    parser.add_option("--range", dest="range",
-                      help="the range of time (in seconds) in which the execution of the job must be unique (default is %default seconds)",
-                      metavar="S", default="300")
-
-    parser.add_option("--s3", dest="s3log",
-                      help="the optional S3 path to put the output of the job in s3://BUCKET[/PATH] format",
-                      metavar="URL", default="")
-
-    parser.add_option("--log", dest="logfile",
-                      help="the local filename to use for logs", metavar="FILE", default="")
-
-    parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
-                      help="print debug information")
-
-    (options, args) = parser.parse_args()
-
-    if options.logfile != '':
-        logHandler = logging.handlers.RotatingFileHandler(options.logfile, maxBytes=1024*1024, backupCount=10)
+    if args.logfile:
+        logHandler = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=1024*1024, backupCount=10)
         logger.addHandler(logHandler)
 
-    if options.debug:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
+    if args.debug:
+        logging.setLevel(logging.DEBUG)
 
-    if len(args) < 1:
-        errorAndExit("at least a command must be provided")
-
-    runjop = RunJOP(options)
-
-    runjop.run(args)
+    RunJOP(options).run(args)
 
 if __name__ == '__main__':
     main()
