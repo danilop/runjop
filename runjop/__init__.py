@@ -14,6 +14,9 @@ from boto.s3.key import Key
 
 from optparse import OptionParser
 
+logging.basicConfig()
+logger = logging.getLogger('runjop')
+
 class RunJOP():
 
     def __init__(self, options):
@@ -196,8 +199,7 @@ def errorAndExit(error, exitCode=1):
     logger.error(error + ", use -h for help.")
     exit(exitCode)
 
-if __name__ == '__main__':
-
+def main():
     usage = """%prog [options] "<command(s)>"
 
 RunJOP (Run Just Once Please) is a distributed execution framework
@@ -226,7 +228,7 @@ In an EC2 instance a IAM role can be used to give access to DynamoDB/S3 resource
 
     parser.add_option("--node", dest="node",
                       help="an identifier for the node (default on this node is '%default')",
-                      metavar="NODE", default=socket.gethostname())
+                      metavar="NODE", default=socket.gethostbyaddr(socket.gethostname())[0])
 
     parser.add_option("--range", dest="range",
                       help="the range of time (in seconds) in which the execution of the job must be unique (default is %default seconds)",
@@ -244,9 +246,6 @@ In an EC2 instance a IAM role can be used to give access to DynamoDB/S3 resource
 
     (options, args) = parser.parse_args()
 
-    logging.basicConfig()
-    logger = logging.getLogger('runjop')
-
     if options.logfile != '':
         logHandler = logging.handlers.RotatingFileHandler(options.logfile, maxBytes=1024*1024, backupCount=10)
         logger.addHandler(logHandler)
@@ -262,3 +261,6 @@ In an EC2 instance a IAM role can be used to give access to DynamoDB/S3 resource
     runjop = RunJOP(options)
 
     runjop.run(args)
+
+if __name__ == '__main__':
+    main()
