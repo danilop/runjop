@@ -185,15 +185,17 @@ class RunJOP(object):
         logger.info("returncode = %i" % returncode)
         logger.info("output:\n%s" % output)
 
-        key_name = self.s3_prefix + '-'.join([self.table_name, self.id,
-                                              now.strftime(self.date_format_s3),
-                                              self.node, str(returncode)]) + '.log'
+	if self.s3_bucket_name:
+
+            key_name = self.s3_prefix + '-'.join([self.table_name, self.id,
+                                                  now.strftime(self.date_format_s3),
+                                                  self.node, str(returncode)]) + '.log'
                 
-        k = Key(self.s3_bucket)
-        k.key = key_name
-        content = '\n'.join(["command:", command, "output:", output])
-        k.set_contents_from_string(content, headers={'Content-Type': 'text/plain'})
-        logger.info("output written on s3://%s/%s" % (self.s3_bucket_name, key_name))
+            k = Key(self.s3_bucket)
+            k.key = key_name
+            content = '\n'.join(["command:", command, "output:", output])
+            k.set_contents_from_string(content, headers={'Content-Type': 'text/plain'})
+            logger.info("output written on s3://%s/%s" % (self.s3_bucket_name, key_name))
 
 def errorAndExit(error, exitCode=1):
     logger.error(error + ", use -h for help.")
