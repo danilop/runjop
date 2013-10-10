@@ -80,7 +80,7 @@ On DynamoDB the "myschedule" table can be used as an activity log:
 
 The optional S3 log has the following naming convention:
 
-    {table}-{id}-{YYYYMMDD}-{hhmmss}-{node}.log
+    {table}-{id}-{YYYYMMDD}-{hhmmss}-{node}-{returncode}.log
 
 ### Using with cron
 
