@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import sys
 
 install_requires = ["boto"]
@@ -11,6 +11,7 @@ if sys.version_info[:2] < (2, 7):
 setup(
   name="runjop",
   version="1.0",
+  packages = find_packages(),
   author="Danilo Poccia",
   install_requires=install_requires,
   entry_points = { 'console_scripts': ['runjop = runjop:main'] },
