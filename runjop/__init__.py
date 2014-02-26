@@ -65,6 +65,11 @@ class RunJOP(object):
         else:
             self.s3_bucket_name = None
 
+        if options.command:
+            self.command = options.command
+        else:
+            errorAndExit("the command to execute must be provided")
+
         # AWS Initialization
 
         self.aws_region = options.region # Not used by S3
@@ -109,8 +114,8 @@ class RunJOP(object):
         self.table.refresh(wait_for_active=True, retry_seconds=5)
         logger.debug("table '%s' is active" % self.table_name)
 
-    def run(self, args):
-        logger.debug("run '%s'" % args)
+    def run(self):
+        logger.debug("run command '%s'" % self.command)
 
         now = datetime.datetime.utcnow()
         logger.debug("now = '%s'" % now.strftime(self.date_format_db))
@@ -171,12 +176,10 @@ class RunJOP(object):
             logger.info("command not executed")
             return
 
-        command = ' '.join(args)
-
-        logger.info("executing command '%s'" % command)
+        logger.info("executing command '%s'" % self.command)
             
         try:
-            output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+            output = subprocess.check_output(self.command, stderr=subprocess.STDOUT, shell=True)
             returncode = 0
         except subprocess.CalledProcessError, e:
             output = e.output
@@ -193,7 +196,7 @@ class RunJOP(object):
                 
             k = Key(self.s3_bucket)
             k.key = key_name
-            content = '\n'.join(["command:", command, "output:", output])
+            content = '\n'.join(["command:", self.command, "output:", output])
             k.set_contents_from_string(content, headers={'Content-Type': 'text/plain'})
             logger.info("output written on s3://%s/%s" % (self.s3_bucket_name, key_name))
 
@@ -238,16 +241,16 @@ access to DynamoDB/S3 resources."""
     parser.add_argument("--debug", action="store_true", default=False,
             help="print debug information")
 
-    args = parser.parse_args()
+    options = parser.parse_args()
 
-    if args.logfile:
+    if options.logfile:
         logHandler = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=1024*1024, backupCount=10)
         logger.addHandler(logHandler)
 
-    if args.debug:
+    if options.debug:
         logging.setLevel(logging.DEBUG)
 
-    RunJOP(options).run(args)
+    RunJOP(options).run()
 
 if __name__ == '__main__':
     main()
