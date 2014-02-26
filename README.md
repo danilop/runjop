@@ -124,8 +124,3 @@ E.g. to	execute	the job to be run every two hours, namely at midnight, 2am, 4am,
 		       s3://BUCKET[/PATH] format
       --log=FILE       the local filename to use for logs
       -d, --debug      print debug information
-
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/danilop/runjop/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
