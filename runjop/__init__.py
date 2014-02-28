@@ -244,7 +244,7 @@ access to DynamoDB/S3 resources."""
     options = parser.parse_args()
 
     if options.logfile:
-        logHandler = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=1024*1024, backupCount=10)
+        logHandler = logging.handlers.RotatingFileHandler(options.logfile, maxBytes=1024*1024, backupCount=10)
         logger.addHandler(logHandler)
 
     if options.debug:
